@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inbound Strike - Nuclear Winter</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: #000;
+      font-family: 'Orbitron', monospace;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    .container {
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Animated danger stripes background */
+    .danger-stripes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        45deg,
+        #000 0px,
+        #000 40px,
+        #ff0000 40px,
+        #ff0000 80px,
+        #39FF14 80px,
+        #39FF14 120px
+      );
+      animation: stripes-move 1s linear infinite;
+      opacity: 0.15;
+    }
+    
+    @keyframes stripes-move {
+      from { background-position: 0 0; }
+      to { background-position: 120px 120px; }
+    }
+    
+    /* Red pulse overlay */
+    .pulse-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, 
+        rgba(255, 0, 0, 0.4) 0%, 
+        transparent 70%);
+      animation: pulse-danger 0.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-danger {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+    
+    /* Warning header */
+    .warning-header {
+      position: absolute;
+      top: 80px;
+      left: 0;
+      right: 0;
+      text-align: center;
+    }
+    
+    .warning-title {
+      font-size: 64px;
+      color: #ff0000;
+      letter-spacing: 16px;
+      text-shadow: 
+        0 0 30px #ff0000,
+        0 0 60px #ff0000,
+        4px 4px 0 #000;
+      animation: title-shake 0.1s infinite;
+      font-weight: 900;
+    }
+    
+    @keyframes title-shake {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, 2px); }
+      50% { transform: translate(2px, -2px); }
+      75% { transform: translate(-2px, -2px); }
+    }
+    
+    .warning-subtitle {
+      font-size: 32px;
+      color: #39FF14;
+      letter-spacing: 8px;
+      margin-top: 20px;
+      text-shadow: 
+        0 0 20px #39FF14,
+        2px 2px 0 #000;
+      animation: blink-warning 0.5s infinite;
+      font-weight: 900;
+    }
+    
+    @keyframes blink-warning {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    
+    /* Main countdown display */
+    .countdown-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    
+    .countdown-number {
+      font-size: 400px;
+      color: #ff0000;
+      font-weight: 900;
+      text-shadow: 
+        0 0 20px #ff0000,
+        6px 6px 0 #000,
+        -2px -2px 0 #39FF14;
+      animation: number-pulse 1s ease-in-out;
+      line-height: 1;
+    }
+    
+    @keyframes number-pulse {
+      0% { 
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      10% { 
+        transform: scale(1.2);
+        opacity: 1;
+      }
+      90% { 
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% { 
+        transform: scale(0.8);
+        opacity: 0;
+      }
+    }
+    
+    /* Detonation message — timing injected by JS */
+    .detonation-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 120px;
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: 20px;
+      text-shadow: 
+        0 0 60px #ff0000,
+        0 0 120px #ff0000,
+        8px 8px 0 #000;
+      opacity: 0;
+    }
+    
+    /* Warning symbols rotating around */
+    .rotating-warnings {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 800px;
+      height: 800px;
+      transform: translate(-50%, -50%);
+      animation: rotate-warnings 4s linear infinite;
+    }
+    
+    @keyframes rotate-warnings {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    .warning-symbol {
+      position: absolute;
+      font-size: 80px;
+      color: #39FF14;
+      text-shadow: 0 0 30px #39FF14;
+    }
+    
+    .warning-symbol:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
+    .warning-symbol:nth-child(2) { top: 50%; right: 0; transform: translateY(-50%); }
+    .warning-symbol:nth-child(3) { bottom: 0; left: 50%; transform: translateX(-50%); }
+    .warning-symbol:nth-child(4) { top: 50%; left: 0; transform: translateY(-50%); }
+    
+    /* Progress bar — width animation injected by JS */
+    .progress-container {
+      position: absolute;
+      bottom: 120px;
+      left: 10%;
+      right: 10%;
+      height: 40px;
+      background: #000;
+      border: 4px solid #ff0000;
+      box-shadow: 
+        0 0 30px rgba(255, 0, 0, 0.5),
+        inset 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, 
+        #39FF14 0%,
+        #ffff00 50%,
+        #ff0000 100%);
+      width: 100%;
+      box-shadow: 0 0 30px currentColor;
+    }
+    
+    /* Bottom info */
+    .info-bar {
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 60px;
+      font-size: 24px;
+      color: #fff;
+      text-shadow: 
+        0 0 15px #ff0000,
+        2px 2px 0 #000;
+      font-weight: 900;
+    }
+    
+    .status-text {
+      animation: blink-status 0.3s infinite;
+    }
+    
+    @keyframes blink-status {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0.3; }
+    }
+    
+    /* White flash at end — timing injected by JS */
+    .flash {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="danger-stripes"></div>
+    <div class="pulse-overlay"></div>
+    
+    <div class="warning-header">
+      <div class="warning-title">DETONATION IMMINENT</div>
+      <div class="warning-subtitle">THIS IS NOT A DRILL</div>
+    </div>
+    
+    <div class="rotating-warnings">
+      <div class="warning-symbol">⚠</div>
+      <div class="warning-symbol">☢</div>
+      <div class="warning-symbol">⚠</div>
+      <div class="warning-symbol">☢</div>
+    </div>
+    
+    <div class="countdown-container">
+      <div class="countdown-number" id="countdown"></div>
+    </div>
+    
+    <div class="detonation-message" id="detonation">DETONATION</div>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <div class="info-bar">
+      <div class="status-text">⚠ CONTAINMENT FAILURE ⚠</div>
+      <div>NW ALERT SYSTEM</div>
+      <div class="status-text">⚠ EVACUATE IMMEDIATELY ⚠</div>
+    </div>
+    
+    <div class="flash" id="flash"></div>
+  </div>
+  
+  <script>
+    // Read ?seconds=N from URL, default to 10
+    const params = new URLSearchParams(window.location.search);
+    const totalSeconds = parseInt(params.get('seconds')) || 10;
+
+    // Inject dynamic CSS for progress bar drain
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes progress-drain {
+        from { width: 100%; }
+        to { width: 0%; }
+      }
+      @keyframes detonation-flash {
+        0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+        50%  { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      }
+      @keyframes final-flash {
+        0%   { opacity: 0; }
+        50%  { opacity: 1; }
+        100% { opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Apply progress bar animation with correct duration
+    const progressBar = document.getElementById('progress-bar');
+    progressBar.style.animation = `progress-drain ${totalSeconds}s linear forwards`;
+
+    // Apply detonation message animation — fires at end
+    const detonationEl = document.getElementById('detonation');
+    detonationEl.style.animation = `detonation-flash 0.5s ${totalSeconds}s forwards`;
+
+    // Apply white flash — fires 0.5s after detonation
+    const flashEl = document.getElementById('flash');
+    flashEl.style.animation = `final-flash 0.5s ${totalSeconds + 0.5}s forwards`;
+
+    // Countdown number logic
+    let count = totalSeconds;
+    const countdownEl = document.getElementById('countdown');
+    countdownEl.textContent = count;
+
+    const interval = setInterval(() => {
+      count--;
+      if (count > 0) {
+        countdownEl.textContent = count;
+        countdownEl.style.animation = 'none';
+        void countdownEl.offsetWidth; // force reflow to restart animation
+        countdownEl.style.animation = 'number-pulse 1s ease-in-out';
+      } else {
+        countdownEl.style.display = 'none';
+        clearInterval(interval);
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

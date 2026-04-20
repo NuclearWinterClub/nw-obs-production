@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signal Recovery - Nuclear Winter</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: #000;
+      font-family: 'Share Tech Mono', monospace;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    .container {
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Full static - starts at 100% opacity */
+    .static-full {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 100;
+      animation: static-clear 8s forwards;
+    }
+    
+    .static-full::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)"/%3E%3C/svg%3E');
+      opacity: 1;
+      animation: noise-wild 0.1s infinite;
+    }
+    
+    @keyframes noise-wild {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-10px, 10px); }
+      40% { transform: translate(10px, -10px); }
+      60% { transform: translate(-10px, -10px); }
+      80% { transform: translate(10px, 10px); }
+      100% { transform: translate(0, 0); }
+    }
+    
+    @keyframes static-clear {
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      85% { opacity: 0.5; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+    
+    /* Glitchy "searching" messages */
+    .searching-messages {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 101;
+      text-align: center;
+    }
+    
+    .search-text {
+      font-size: 48px;
+      color: #00ff00;
+      letter-spacing: 8px;
+      text-shadow: 0 0 20px #00ff00;
+      animation: glitch-text 0.3s infinite;
+    }
+    
+    @keyframes glitch-text {
+      0% { 
+        transform: translate(0, 0);
+        opacity: 1;
+      }
+      20% { 
+        transform: translate(-5px, 5px);
+        opacity: 0.8;
+      }
+      40% { 
+        transform: translate(5px, -5px);
+        opacity: 0.9;
+      }
+      60% { 
+        transform: translate(-3px, -3px);
+        opacity: 0.7;
+      }
+      80% { 
+        transform: translate(3px, 3px);
+        opacity: 0.85;
+      }
+      100% { 
+        transform: translate(0, 0);
+        opacity: 1;
+      }
+    }
+    
+    .search-bar {
+      margin-top: 30px;
+      font-size: 32px;
+      color: #00ff00;
+      animation: blink-cursor 1s infinite;
+    }
+    
+    @keyframes blink-cursor {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    
+    /* Main recovery content */
+    .recovery-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #00ff00;
+      opacity: 0;
+      animation: content-recover 2s 6s forwards;
+    }
+    
+    @keyframes content-recover {
+      to { opacity: 1; }
+    }
+    
+    .status-box {
+      border: 3px solid #00ff00;
+      padding: 60px 80px;
+      background: rgba(0, 50, 0, 0.8);
+      box-shadow: 0 0 50px rgba(0, 255, 0, 0.4);
+      text-align: center;
+      animation: box-stabilize 1s 7s forwards;
+    }
+    
+    @keyframes box-stabilize {
+      0% { transform: scale(0.95); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+    
+    .recovery-icon {
+      font-size: 100px;
+      margin-bottom: 30px;
+      animation: pulse-icon 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-icon {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+    
+    .recovery-title {
+      font-size: 56px;
+      letter-spacing: 10px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 30px #00ff00;
+      font-weight: bold;
+    }
+    
+    .recovery-message {
+      font-size: 32px;
+      letter-spacing: 6px;
+      color: #00ff00;
+      margin-top: 20px;
+    }
+    
+    .status-list {
+      margin-top: 40px;
+      text-align: left;
+      font-size: 24px;
+      line-height: 2;
+    }
+    
+    .status-item {
+      opacity: 0;
+      animation: item-appear 0.5s forwards;
+    }
+    
+    .status-item:nth-child(1) { animation-delay: 7.5s; }
+    .status-item:nth-child(2) { animation-delay: 8s; }
+    .status-item:nth-child(3) { animation-delay: 8.5s; }
+    .status-item:nth-child(4) { animation-delay: 9s; }
+    
+    @keyframes item-appear {
+      to { opacity: 1; }
+    }
+    
+    .check {
+      color: #00ff00;
+      margin-right: 15px;
+    }
+    
+    .we-remain {
+      text-align: center;
+      font-size: 42px;
+      letter-spacing: 8px;
+      margin-top: 50px;
+      color: #00ffff;
+      text-shadow: 0 0 30px #00ffff;
+      font-weight: bold;
+      opacity: 0;
+      animation: final-message 1s 9.5s forwards;
+    }
+    
+    @keyframes final-message {
+      0% { opacity: 0; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.05); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    
+    /* CRT effects */
+    .scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+    
+    .vignette {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+      z-index: 999;
+    }
+    
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Full static layer -->
+    <div class="static-full"></div>
+    
+    <!-- Searching messages during static -->
+    <div class="searching-messages">
+      <div class="search-text" id="searchText">SEARCHING FOR SIGNAL...</div>
+      <div class="search-bar">▂▃▅▇█▇▅▃▂</div>
+    </div>
+    
+    <!-- Recovery content -->
+    <div class="recovery-content">
+      <div class="status-box">
+        <div class="recovery-icon">📡</div>
+        <div class="recovery-title">SIGNAL RESTORED</div>
+        <div class="recovery-message">SHELTER 14 ONLINE</div>
+        
+        <div class="status-list">
+          <div class="status-item"><span class="check">✓</span> BROADCAST ACTIVE</div>
+          <div class="status-item"><span class="check">✓</span> SURVIVORS CONNECTED</div>
+          <div class="status-item"><span class="check">✓</span> RESISTANCE INTACT</div>
+          <div class="status-item"><span class="check">✓</span> DANCE FLOOR OPERATIONAL</div>
+        </div>
+        
+        <div class="we-remain">WE REMAIN</div>
+      </div>
+    </div>
+    
+    <!-- CRT effects -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+  </div>
+  
+  <script>
+    const messages = [
+      "SEARCHING FOR SIGNAL...",
+      "SCANNING FREQUENCIES...",
+      "ATTEMPTING RECONNECT...",
+      "SIGNAL DETECTED...",
+      "ESTABLISHING LINK..."
+    ];
+    
+    let msgIndex = 0;
+    const searchTextEl = document.getElementById('searchText');
+    
+    const msgInterval = setInterval(() => {
+      msgIndex++;
+      if (msgIndex < messages.length) {
+        searchTextEl.textContent = messages[msgIndex];
+      } else {
+        clearInterval(msgInterval);
+      }
+    }, 1200);
+    
+  </script>
+</body>
+</html>
