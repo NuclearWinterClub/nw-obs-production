@@ -1,0 +1,979 @@
+[
+    {
+        "name": "NW - Nuke Strike Sequence",
+        "group": false,
+        "pauseSaveBehavior": 0,
+        "pause": false,
+        "parallel": true,
+        "checkConditionsInParallel": false,
+        "actionTriggerMode": 1,
+        "skipExecOnStart": false,
+        "stopActionsIfNotDone": false,
+        "useShortCircuitEvaluation": false,
+        "useCustomConditionCheckInterval": false,
+        "customConditionCheckInterval": {
+            "value": {
+                "value": 0.3,
+                "type": 0
+            },
+            "unit": 0,
+            "version": 1
+        },
+        "dockSettings": {
+            "register": false,
+            "standaloneDock": true,
+            "dockWindow": "Dock",
+            "hasRunButton": true,
+            "hasPauseButton": true,
+            "hasStatusLabel": false,
+            "highlightIfConditionsTrue": false,
+            "runButtonText": "Run",
+            "pauseButtonText": "Pause",
+            "unpauseButtonText": "Unpause",
+            "conditionsTrueStatusText": "Conditions are true.",
+            "conditionsFalseStatusText": "Conditions are false.",
+            "dockId": "advss-macro-dock-49c6cf3e-359d-41f2-bf4d-6daf613beb18",
+            "version": 1
+        },
+        "macroActionConditionSplitterPosition": [
+            {
+                "pos": 0
+            },
+            {
+                "pos": 648
+            }
+        ],
+        "macroElseActionSplitterPosition": [
+            {
+                "pos": 616
+            },
+            {
+                "pos": 0
+            }
+        ],
+        "registerHotkeys": false,
+        "pauseHotkey": [],
+        "unpauseHotkey": [],
+        "togglePauseHotkey": [],
+        "conditions": [
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "hotkey",
+                "logic": 0,
+                "durationModifier": {
+                    "time_constraint": 0,
+                    "seconds": {
+                        "value": {
+                            "value": 0.0,
+                            "type": 0
+                        },
+                        "unit": 0,
+                        "version": 1
+                    }
+                },
+                "desc": "NW - Nuke Strike Sequence Start ",
+                "keyBind": [
+                    {
+                        "shift": true,
+                        "control": true,
+                        "key": "OBS_KEY_N"
+                    }
+                ],
+                "checkPressed": true
+            }
+        ],
+        "actions": [
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG1 - Alert"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG2 - Countdown"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG3 - Strike"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG4 - Recovery"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - MAIN",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "NW - Nuke Overlay"
+                },
+                "updateTransition": true,
+                "transitionType": 0,
+                "transition": "Cut",
+                "updateDuration": true,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 0
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Front Room",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "NW - Nuke Overlay"
+                },
+                "updateTransition": true,
+                "transitionType": 0,
+                "transition": "Cut",
+                "updateDuration": true,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 0
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Back Room",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "NW - Nuke Overlay"
+                },
+                "updateTransition": true,
+                "transitionType": 0,
+                "transition": "Cut",
+                "updateDuration": true,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 0
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "hotkey",
+                "action": 1,
+                "hotkeyType": 0,
+                "hotkeyName": "",
+                "key": 18,
+                "left_shift": false,
+                "right_shift": false,
+                "left_ctrl": false,
+                "right_ctrl": false,
+                "left_alt": true,
+                "right_alt": false,
+                "left_meta": false,
+                "right_meta": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "onlyOBS": false,
+                "version": 2
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "wait",
+                "duration": {
+                    "value": {
+                        "value": 0.5,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "duration2": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "waitType": 0,
+                "version": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG1 - Alert"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 0
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "wait",
+                "duration": {
+                    "value": {
+                        "value": 0.5,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "duration2": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "waitType": 0,
+                "version": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "hotkey",
+                "action": 1,
+                "hotkeyType": 0,
+                "hotkeyName": "",
+                "key": 20,
+                "left_shift": false,
+                "right_shift": false,
+                "left_ctrl": false,
+                "right_ctrl": false,
+                "left_alt": true,
+                "right_alt": false,
+                "left_meta": false,
+                "right_meta": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "onlyOBS": false,
+                "version": 2
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "wait",
+                "duration": {
+                    "value": {
+                        "value": 19.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "duration2": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "waitType": 0,
+                "version": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG1 - Alert"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG2 - Countdown"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 0
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "wait",
+                "duration": {
+                    "value": {
+                        "value": 10.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "duration2": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "waitType": 0,
+                "version": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG2 - Countdown"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "media",
+                "action": 3,
+                "selectionType": 0,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "seekPercentage": {
+                    "value": 50.0,
+                    "type": 0
+                },
+                "mediaSource": {
+                    "type": 0,
+                    "name": "NW - Nuclear Bomb"
+                },
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": ""
+                }
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG3 - Strike"
+                },
+                "updateTransition": true,
+                "transitionType": 0,
+                "transition": "Cut",
+                "updateDuration": true,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 0
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "wait",
+                "duration": {
+                    "value": {
+                        "value": 20.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "duration2": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "waitType": 0,
+                "version": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG3 - Strike"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG4 - Recovery"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 0
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "wait",
+                "duration": {
+                    "value": {
+                        "value": 7.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "duration2": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "waitType": 0,
+                "version": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Nuke Overlay",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "SG4 - Recovery"
+                },
+                "updateTransition": false,
+                "transitionType": 0,
+                "transition": "",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - MAIN",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "NW - Nuke Overlay"
+                },
+                "updateTransition": true,
+                "transitionType": 0,
+                "transition": "Fade",
+                "updateDuration": true,
+                "duration": {
+                    "value": {
+                        "value": 2.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Front Room",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "NW - Nuke Overlay"
+                },
+                "updateTransition": true,
+                "transitionType": 0,
+                "transition": "Fade",
+                "updateDuration": true,
+                "duration": {
+                    "value": {
+                        "value": 2.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Back Room",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "NW - Nuke Overlay"
+                },
+                "updateTransition": true,
+                "transitionType": 0,
+                "transition": "Fade",
+                "updateDuration": true,
+                "duration": {
+                    "value": {
+                        "value": 2.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            }
+        ],
+        "elseActions": [],
+        "inputVariables": []
+    }
+]

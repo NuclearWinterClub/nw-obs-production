@@ -1,0 +1,243 @@
+[
+    {
+        "name": "ZowieBox Audio Watchdog - Front Room",
+        "group": false,
+        "pauseSaveBehavior": 0,
+        "pause": false,
+        "parallel": true,
+        "checkConditionsInParallel": false,
+        "actionTriggerMode": 1,
+        "skipExecOnStart": false,
+        "stopActionsIfNotDone": false,
+        "useShortCircuitEvaluation": false,
+        "useCustomConditionCheckInterval": false,
+        "customConditionCheckInterval": {
+            "value": {
+                "value": 0.3,
+                "type": 0
+            },
+            "unit": 0,
+            "version": 1
+        },
+        "dockSettings": {
+            "register": false,
+            "standaloneDock": true,
+            "dockWindow": "Dock",
+            "hasRunButton": true,
+            "hasPauseButton": true,
+            "hasStatusLabel": false,
+            "highlightIfConditionsTrue": false,
+            "runButtonText": "Run",
+            "pauseButtonText": "Pause",
+            "unpauseButtonText": "Unpause",
+            "conditionsTrueStatusText": "Conditions are true.",
+            "conditionsFalseStatusText": "Conditions are false.",
+            "dockId": "advss-macro-dock-4b5d958f-0efd-429b-8f04-63df450efabc",
+            "version": 1
+        },
+        "macroActionConditionSplitterPosition": [
+            {
+                "pos": 353
+            },
+            {
+                "pos": 299
+            }
+        ],
+        "macroElseActionSplitterPosition": [
+            {
+                "pos": 267
+            },
+            {
+                "pos": 0
+            }
+        ],
+        "registerHotkeys": false,
+        "pauseHotkey": [],
+        "unpauseHotkey": [],
+        "togglePauseHotkey": [],
+        "conditions": [
+            {
+                "segmentSettings": {
+                    "collapsed": false,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "audio",
+                "logic": 0,
+                "durationModifier": {
+                    "time_constraint": 1,
+                    "seconds": {
+                        "value": {
+                            "value": 6.0,
+                            "type": 0
+                        },
+                        "unit": 0,
+                        "version": 1
+                    }
+                },
+                "audioSource": {
+                    "type": 0,
+                    "name": ""
+                },
+                "monitor": 0,
+                "volume": {
+                    "value": 0.17782793939113617,
+                    "type": 0
+                },
+                "syncOffset": {
+                    "value": 0,
+                    "type": 0
+                },
+                "balance": {
+                    "value": 0.5,
+                    "type": 0
+                },
+                "checkType": 0,
+                "outputCondition": 1,
+                "volumeCondition": 0,
+                "useDb": true,
+                "volumeDB": {
+                    "value": -55.0,
+                    "type": 0
+                },
+                "version": 3
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": false,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "streaming",
+                "logic": 101,
+                "durationModifier": {
+                    "time_constraint": 0,
+                    "seconds": {
+                        "value": {
+                            "value": 0.0,
+                            "type": 0
+                        },
+                        "unit": 0,
+                        "version": 1
+                    }
+                },
+                "state": 1,
+                "keyFrameInterval": {
+                    "value": 0,
+                    "type": 0
+                },
+                "streamKey": "",
+                "serviceName": "",
+                "regexConfig": {
+                    "enable": false,
+                    "partial": false,
+                    "options": 0
+                }
+            }
+        ],
+        "actions": [
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Front Room",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "Front Video"
+                },
+                "updateTransition": true,
+                "transitionType": 0,
+                "transition": "Cut",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "wait",
+                "duration": {
+                    "value": {
+                        "value": 2.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "duration2": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "waitType": 0,
+                "version": 1
+            },
+            {
+                "segmentSettings": {
+                    "collapsed": true,
+                    "useCustomLabel": false,
+                    "customLabel": "My label",
+                    "enabled": true,
+                    "version": 1
+                },
+                "id": "scene_visibility",
+                "sceneSelection": {
+                    "type": 0,
+                    "name": "NW - Front Room",
+                    "canvasSelection": "Main"
+                },
+                "sceneItemSelection": {
+                    "type": 0,
+                    "idxType": 0,
+                    "idx": 0,
+                    "item": "Front Video"
+                },
+                "updateTransition": true,
+                "transitionType": 0,
+                "transition": "Cut",
+                "updateDuration": false,
+                "duration": {
+                    "value": {
+                        "value": 0.0,
+                        "type": 0
+                    },
+                    "unit": 0,
+                    "version": 1
+                },
+                "action": 0
+            }
+        ],
+        "elseActions": [],
+        "inputVariables": []
+    }
+]
