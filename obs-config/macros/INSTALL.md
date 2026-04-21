@@ -3,7 +3,8 @@
 ## Prerequisites
 
 - OBS Studio 32.x with Advanced Scene Switcher (ASS) 1.33.1+
-- obs-plugin-countdown installed (for Doomsday Timer)
+- obs-plugin-countdown (for Doomsday Timer)
+- obs-shaderfilter 2.6.0 (glitch filter on `NW - Nuclear Strike Text` — built-in shader, no extra files needed)
 - The scene collection `_Nuclear_Winter_Stable_interface_with_MUTEX_and_Webhooks_` imported
 
 ---
