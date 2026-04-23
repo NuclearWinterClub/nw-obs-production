@@ -1,266 +1,297 @@
 -- ============================================================
---  Nuclear Winter — VJ Mutex Pocket System
---  OBS Lua Script — CANON v1.0
--- ============================================================
---  CONFIGURATION — only edit this section
--- ============================================================
-
-local SCENE_NAME   = "VJ Titles"  -- exact OBS scene name
-local REPLAY_DELAY = 20           -- seconds between video replays
-local COOLDOWN     = 3            -- seconds to ignore signals after replay starts
-
-local FRONT_VJS = {
-    { source = "Forced Hand", label = "Forced Hand" },
-    { source = "Midnight",    label = "Midnight"    },
-    { source = "Aggrofemm",   label = "Aggrofemm"   },
-    { source = "Unit:77",     label = "Unit:77"     },
-}
-
-local BACK_VJS = {
-    -- Add Back Room VJs here when ready, e.g.:
-    -- { source = "BR Name", label = "BR Name" },
-}
-
--- ============================================================
---  SYSTEM — no edits needed below this line
+--  nuclear_winter_vj.lua  v2.0
+--  OBS Lua Script — Dual-Room VJ MUTEX Controller
+--  Front Room: 4 slots   Back Room: 4 slots
+--  User-assignable sources via Script Properties
 -- ============================================================
 
-local obs = obslua
+local obs    = obslua
+local ffi    = require("ffi")
 
-local active_vj    = { front = nil, back = nil }
-local hotkey_ids   = {}
-local timer_funcs  = {}
-local waiting      = {}
-local cooldown     = {}
-local settings_ref = nil
-local initialized  = false
+-- ── CONSTANTS ────────────────────────────────────────────────
+local VJ_SLOTS_PER_ROOM = 4
+local LOOP_DURATION     = 120   -- seconds before media restart
+local COOLDOWN_SECS     = 2     -- guard against double-fire
 
-local function get_scene_item(source_name)
-    local scene_source = obs.obs_get_source_by_name(SCENE_NAME)
-    if not scene_source then
-        obs.script_log(obs.LOG_WARNING, "Could not find scene: " .. SCENE_NAME)
-        return nil
-    end
-    local scene = obs.obs_scene_from_source(scene_source)
-    local item  = obs.obs_scene_find_source(scene, source_name)
-    obs.obs_source_release(scene_source)
-    return item
+-- ── RUNTIME STATE ────────────────────────────────────────────
+local front_sources   = {}   -- [1..4] source name strings
+local back_sources    = {}   -- [1..4] source name strings
+
+local front_active    = nil  -- slot number currently live (FR)
+local back_active     = nil  -- slot number currently live (BR)
+
+local front_waiting   = {}   -- [slot] = true while media is cued
+local back_waiting    = {}
+local front_cooldown  = {}   -- [slot] = true during cooldown
+local back_cooldown   = {}
+
+local connected_signals = {}  -- [source_name] = true
+
+local hotkeys = {}            -- keyed by "front_slot_N" / "back_slot_N" / "clear_front" / "clear_back"
+local loop_timers = {}        -- [source_name] = timer handle
+
+-- ── HELPERS ──────────────────────────────────────────────────
+local function log(msg)
+    print("[NW VJ] " .. tostring(msg))
+end
+
+local function get_source(name)
+    if not name or name == "" then return nil end
+    return obs.obs_get_source_by_name(name)
 end
 
 local function set_visible(source_name, visible)
-    local item = get_scene_item(source_name)
-    if item then
-        obs.obs_sceneitem_set_visible(item, visible)
-    end
-end
-
-local function stop_media(source_name)
-    local source = obs.obs_get_source_by_name(source_name)
-    if source then
-        obs.obs_source_media_stop(source)
-        obs.obs_source_release(source)
-    end
+    local scene_src = obs.obs_frontend_get_current_scene()
+    if not scene_src then return end
+    local scene = obs.obs_scene_from_source(scene_src)
+    local item  = obs.obs_scene_find_source(scene, source_name)
+    if item then obs.obs_sceneitem_set_visible(item, visible) end
+    obs.obs_source_release(scene_src)
 end
 
 local function restart_media(source_name)
-    local source = obs.obs_get_source_by_name(source_name)
-    if source then
-        obs.obs_source_media_restart(source)
-        obs.obs_source_release(source)
+    local src = get_source(source_name)
+    if src then
+        obs.obs_source_media_restart(src)
+        obs.obs_source_release(src)
     end
 end
 
-local function schedule_once(key, delay_ms, callback)
-    if timer_funcs[key] then
-        obs.timer_remove(timer_funcs[key])
-        timer_funcs[key] = nil
-    end
-    local function one_shot()
-        obs.timer_remove(timer_funcs[key])
-        timer_funcs[key] = nil
-        callback()
-    end
-    timer_funcs[key] = one_shot
-    obs.timer_add(one_shot, delay_ms)
-end
-
-local function cancel_timer(key)
-    if timer_funcs[key] then
-        obs.timer_remove(timer_funcs[key])
-        timer_funcs[key] = nil
+local function stop_loop_timer(source_name)
+    if loop_timers[source_name] then
+        obs.timer_remove(loop_timers[source_name])
+        loop_timers[source_name] = nil
     end
 end
 
-local function start_cooldown(source_name)
-    cooldown[source_name] = true
-    schedule_once("cooldown_" .. source_name, COOLDOWN * 1000, function()
-        cooldown[source_name] = false
-        obs.script_log(obs.LOG_INFO, "Cooldown ended: " .. source_name)
-    end)
-end
-
-local function do_replay(source_name)
-    waiting[source_name] = false
-    if active_vj.front == source_name or active_vj.back == source_name then
-        obs.script_log(obs.LOG_INFO, "Replaying: " .. source_name)
-        start_cooldown(source_name)
+local function start_loop_timer(source_name)
+    stop_loop_timer(source_name)
+    local cb = function()
         restart_media(source_name)
-        set_visible(source_name, true)
+    end
+    obs.timer_add(cb, LOOP_DURATION * 1000)
+    loop_timers[source_name] = cb
+end
+
+-- ── ROOM OPERATIONS ──────────────────────────────────────────
+local function hide_all(room)
+    local sources = (room == "FR") and front_sources or back_sources
+    for _, name in ipairs(sources) do
+        if name and name ~= "" then
+            set_visible(name, false)
+            stop_loop_timer(name)
+        end
     end
 end
 
-local function on_media_ended(source_name)
-    if cooldown[source_name] then
-        obs.script_log(obs.LOG_INFO, "Signal blocked by cooldown: " .. source_name)
-        return
-    end
-    if waiting[source_name] then
-        obs.script_log(obs.LOG_INFO, "Signal blocked, already waiting: " .. source_name)
-        return
-    end
-    if active_vj.front ~= source_name and active_vj.back ~= source_name then return end
-    obs.script_log(obs.LOG_INFO, "Media ended, waiting " .. REPLAY_DELAY .. "s: " .. source_name)
-    set_visible(source_name, false)
-    waiting[source_name] = true
-    schedule_once("replay_" .. source_name, REPLAY_DELAY * 1000, function()
-        do_replay(source_name)
-    end)
-end
-
-local function connect_media_signals(source_name)
-    local source = obs.obs_get_source_by_name(source_name)
-    if not source then
-        obs.script_log(obs.LOG_WARNING, "Could not find source: " .. source_name)
-        return
-    end
-    local handler = obs.obs_source_get_signal_handler(source)
-    obs.signal_handler_connect(handler, "media_ended", function()
-        on_media_ended(source_name)
-    end)
-    obs.obs_source_release(source)
-    obs.script_log(obs.LOG_INFO, "Connected signals for: " .. source_name)
-end
-
-local function deactivate(source_name)
-    cancel_timer("replay_" .. source_name)
-    cancel_timer("cooldown_" .. source_name)
-    waiting[source_name]  = false
-    cooldown[source_name] = false
-    stop_media(source_name)
-    set_visible(source_name, false)
-end
-
-local function hide_all(vj_list)
-    for _, vj in ipairs(vj_list) do
-        deactivate(vj.source)
-    end
-end
-
-local function activate_vj(room, vj)
-    local vj_list = (room == "front") and FRONT_VJS or BACK_VJS
-    if active_vj[room] == vj.source then
-        deactivate(vj.source)
-        active_vj[room] = nil
-        obs.script_log(obs.LOG_INFO, "Deactivated: " .. vj.source)
+local function deactivate(room)
+    if room == "FR" then
+        front_active = nil
     else
-        hide_all(vj_list)
-        waiting[vj.source]  = false
-        cooldown[vj.source] = false
-        start_cooldown(vj.source)
-        restart_media(vj.source)
-        set_visible(vj.source, true)
-        active_vj[room] = vj.source
-        obs.script_log(obs.LOG_INFO, "Activated: " .. vj.source)
+        back_active = nil
     end
+    hide_all(room)
 end
 
 local function clear_room(room)
-    local vj_list = (room == "front") and FRONT_VJS or BACK_VJS
-    hide_all(vj_list)
-    active_vj[room] = nil
-    obs.script_log(obs.LOG_INFO, "Cleared room: " .. room)
+    log("Clear " .. room)
+    deactivate(room)
+    if room == "FR" then
+        for i = 1, VJ_SLOTS_PER_ROOM do
+            front_waiting[i]  = false
+            front_cooldown[i] = false
+        end
+    else
+        for i = 1, VJ_SLOTS_PER_ROOM do
+            back_waiting[i]  = false
+            back_cooldown[i] = false
+        end
+    end
 end
 
-local function register_hotkeys()
-    if initialized then return end
-    initialized = true
-    obs.script_log(obs.LOG_INFO, "Registering hotkeys...")
-    for _, vj in ipairs(FRONT_VJS) do
-        local key    = "front_" .. vj.source
-        local label  = "FR: " .. vj.label
-        local vj_ref = vj
-        local id = obs.obs_hotkey_register_frontend(key, label,
-            function(pressed) if pressed then activate_vj("front", vj_ref) end end)
-        hotkey_ids[key] = id
-        if settings_ref then
-            local a = obs.obs_data_get_array(settings_ref, key)
-            obs.obs_hotkey_load(id, a)
-            obs.obs_data_array_release(a)
-        end
-        obs.script_log(obs.LOG_INFO, "Registered: " .. label)
-        waiting[vj.source]  = false
-        cooldown[vj.source] = false
+local function activate_vj(room, slot)
+    local sources = (room == "FR") and front_sources or back_sources
+    local name    = sources[slot]
+    if not name or name == "" then
+        log("Slot " .. slot .. " in " .. room .. " has no source assigned.")
+        return
     end
-    for _, vj in ipairs(BACK_VJS) do
-        local key    = "back_" .. vj.source
-        local label  = "BR: " .. vj.label
-        local vj_ref = vj
-        local id = obs.obs_hotkey_register_frontend(key, label,
-            function(pressed) if pressed then activate_vj("back", vj_ref) end end)
-        hotkey_ids[key] = id
-        if settings_ref then
-            local a = obs.obs_data_get_array(settings_ref, key)
-            obs.obs_hotkey_load(id, a)
-            obs.obs_data_array_release(a)
-        end
-        obs.script_log(obs.LOG_INFO, "Registered: " .. label)
-        waiting[vj.source]  = false
-        cooldown[vj.source] = false
-    end
-    local fr_clear_id = obs.obs_hotkey_register_frontend("clear_front", "FR: Clear VJs",
-        function(pressed) if pressed then clear_room("front") end end)
-    hotkey_ids["clear_front"] = fr_clear_id
-    obs.script_log(obs.LOG_INFO, "Registered: FR: Clear VJs")
-    local br_clear_id = obs.obs_hotkey_register_frontend("clear_back", "BR: Clear VJs",
-        function(pressed) if pressed then clear_room("back") end end)
-    hotkey_ids["clear_back"] = br_clear_id
-    obs.script_log(obs.LOG_INFO, "Registered: BR: Clear VJs")
-    if settings_ref then
-        for key, id in pairs(hotkey_ids) do
-            local a = obs.obs_data_get_array(settings_ref, key)
-            obs.obs_hotkey_load(id, a)
-            obs.obs_data_array_release(a)
-        end
-    end
-    for _, vj in ipairs(FRONT_VJS) do connect_media_signals(vj.source) end
-    for _, vj in ipairs(BACK_VJS) do connect_media_signals(vj.source) end
-    obs.script_log(obs.LOG_INFO, "Nuclear Winter VJ system ready.")
-    obs.timer_remove(register_hotkeys)
+
+    hide_all(room)
+
+    if room == "FR" then front_active = slot else back_active = slot end
+
+    set_visible(name, true)
+    restart_media(name)
+    start_loop_timer(name)
+    log(room .. " → slot " .. slot .. " (" .. name .. ")")
 end
 
+-- ── MEDIA-ENDED SIGNAL ────────────────────────────────────────
+local function on_media_ended(calldata)
+    local src  = obs.calldata_source(calldata, "source")
+    if not src then return end
+    local name = obs.obs_source_get_name(src)
+
+    -- find which room/slot owns this source
+    local function check_room(room, sources, active, waiting, cooldown)
+        for i, sname in ipairs(sources) do
+            if sname == name then
+                if active == i and not cooldown[i] then
+                    if not waiting[i] then
+                        waiting[i]  = true
+                        cooldown[i] = true
+                        obs.timer_add(function()
+                            cooldown[i] = false
+                            obs.timer_remove(obs.timer_callback)
+                        end, COOLDOWN_SECS * 1000)
+                        restart_media(name)
+                        waiting[i] = false
+                    end
+                end
+                return true
+            end
+        end
+        return false
+    end
+
+    if not check_room("FR", front_sources, front_active, front_waiting, front_cooldown) then
+        check_room("BR", back_sources,  back_active,  back_waiting,  back_cooldown)
+    end
+end
+
+local function connect_media_signal(source_name)
+    if not source_name or source_name == "" then return end
+    if connected_signals[source_name] then return end
+    local src = get_source(source_name)
+    if src then
+        local handler = obs.obs_source_get_signal_handler(src)
+        obs.signal_handler_connect(handler, "media_ended", on_media_ended)
+        obs.obs_source_release(src)
+        connected_signals[source_name] = true
+        log("Signal connected: " .. source_name)
+    end
+end
+
+-- ── HOTKEY CALLBACKS ─────────────────────────────────────────
+local function make_slot_cb(room, slot)
+    return function(pressed)
+        if not pressed then return end
+        activate_vj(room, slot)
+    end
+end
+
+local function make_clear_cb(room)
+    return function(pressed)
+        if not pressed then return end
+        clear_room(room)
+    end
+end
+
+-- ── SCRIPT PROPERTIES ────────────────────────────────────────
+function script_properties()
+    local props = obs.obs_properties_create()
+
+    obs.obs_properties_add_text(props, "_fr_header", "── FRONT ROOM ──────────────────────", obs.OBS_TEXT_INFO)
+    for i = 1, VJ_SLOTS_PER_ROOM do
+        obs.obs_properties_add_text(props,
+            "front_slot_" .. i .. "_source",
+            "FR Slot " .. i .. " Source Name",
+            obs.OBS_TEXT_DEFAULT)
+    end
+
+    obs.obs_properties_add_text(props, "_br_header", "── BACK ROOM ───────────────────────", obs.OBS_TEXT_INFO)
+    for i = 1, VJ_SLOTS_PER_ROOM do
+        obs.obs_properties_add_text(props,
+            "back_slot_" .. i .. "_source",
+            "BR Slot " .. i .. " Source Name",
+            obs.OBS_TEXT_DEFAULT)
+    end
+
+    return props
+end
+
+-- ── SCRIPT DEFAULTS ───────────────────────────────────────────
+function script_defaults(settings)
+    obs.obs_data_set_default_string(settings, "front_slot_1_source", "Forced Hand")
+    obs.obs_data_set_default_string(settings, "front_slot_2_source", "Midnight")
+    obs.obs_data_set_default_string(settings, "front_slot_3_source", "Aggrofemm")
+    obs.obs_data_set_default_string(settings, "front_slot_4_source", "Unit:77")
+    -- Back Room slots intentionally blank — user assigns at runtime
+end
+
+-- ── SCRIPT UPDATE (settings changed) ─────────────────────────
+function script_update(settings)
+    -- Rebuild source tables
+    front_sources = {}
+    back_sources  = {}
+    for i = 1, VJ_SLOTS_PER_ROOM do
+        front_sources[i] = obs.obs_data_get_string(settings, "front_slot_" .. i .. "_source")
+        back_sources[i]  = obs.obs_data_get_string(settings, "back_slot_"  .. i .. "_source")
+    end
+
+    -- Connect media signals for any newly assigned sources
+    for _, name in ipairs(front_sources) do connect_media_signal(name) end
+    for _, name in ipairs(back_sources)  do connect_media_signal(name) end
+
+    log("Sources updated — FR: " .. table.concat(front_sources, ", ")
+        .. "  BR: " .. table.concat(back_sources, ", "))
+end
+
+-- ── SCRIPT LOAD ───────────────────────────────────────────────
 function script_load(settings)
-    settings_ref = settings
-    obs.script_log(obs.LOG_INFO, "Script loaded, waiting to register hotkeys...")
-    obs.timer_add(register_hotkeys, 1000)
+    -- Register stable slot hotkeys — Front Room
+    for i = 1, VJ_SLOTS_PER_ROOM do
+        local id    = "front_slot_" .. i
+        local label = "FR: VJ " .. i
+        hotkeys[id] = obs.obs_hotkey_register_frontend(id, label, make_slot_cb("FR", i))
+        local saved = obs.obs_data_get_array(settings, id)
+        obs.obs_hotkey_load(hotkeys[id], saved)
+        obs.obs_data_array_release(saved)
+    end
+
+    -- Register stable slot hotkeys — Back Room
+    for i = 1, VJ_SLOTS_PER_ROOM do
+        local id    = "back_slot_" .. i
+        local label = "BR: VJ " .. i
+        hotkeys[id] = obs.obs_hotkey_register_frontend(id, label, make_slot_cb("BR", i))
+        local saved = obs.obs_data_get_array(settings, id)
+        obs.obs_hotkey_load(hotkeys[id], saved)
+        obs.obs_data_array_release(saved)
+    end
+
+    -- Clear hotkeys
+    hotkeys["clear_front"] = obs.obs_hotkey_register_frontend(
+        "clear_front", "FR: Clear VJs", make_clear_cb("FR"))
+    local cf = obs.obs_data_get_array(settings, "clear_front")
+    obs.obs_hotkey_load(hotkeys["clear_front"], cf)
+    obs.obs_data_array_release(cf)
+
+    hotkeys["clear_back"] = obs.obs_hotkey_register_frontend(
+        "clear_back", "BR: Clear VJs", make_clear_cb("BR"))
+    local cb = obs.obs_data_get_array(settings, "clear_back")
+    obs.obs_hotkey_load(hotkeys["clear_back"], cb)
+    obs.obs_data_array_release(cb)
+
+    -- Apply settings (populates source tables + connects signals)
+    script_update(settings)
+
+    log("v2.0 loaded — " .. VJ_SLOTS_PER_ROOM .. " slots per room, FR + BR active.")
 end
 
+-- ── SCRIPT SAVE ───────────────────────────────────────────────
 function script_save(settings)
-    for key, id in pairs(hotkey_ids) do
-        local a = obs.obs_hotkey_save(id)
-        obs.obs_data_set_array(settings, key, a)
-        obs.obs_data_array_release(a)
+    for key, hk in pairs(hotkeys) do
+        local arr = obs.obs_hotkey_save(hk)
+        obs.obs_data_set_array(settings, key, arr)
+        obs.obs_data_array_release(arr)
     end
 end
 
-function script_unload()
-    for key, _ in pairs(timer_funcs) do
-        cancel_timer(key)
-    end
-end
-
+-- ── SCRIPT DESCRIPTION ───────────────────────────────────────
 function script_description()
-    return "Nuclear Winter — VJ Mutex Pocket System — CANON v1.0\n" ..
-           "Scene: " .. SCENE_NAME .. "\n" ..
-           "Mutually exclusive per room, independent across rooms.\n" ..
-           "Edit the CONFIGURATION block to update VJ names or delay."
+    return "Nuclear Winter — Dual-Room VJ MUTEX Controller v2.0\n\n" ..
+           "Assign OBS source names to FR/BR slots in Script Properties.\n" ..
+           "Bind hotkeys in Settings → Hotkeys (search 'FR:' or 'BR:').\n" ..
+           "Selecting a slot hides all others in that room automatically."
 end
