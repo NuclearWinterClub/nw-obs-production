@@ -1,0 +1,3 @@
+obswebsocket-community
+streamdeck
+Pillow
