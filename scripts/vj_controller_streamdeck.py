@@ -95,11 +95,9 @@ class VJController:
     def discover_vj_sources(self):
         """Query OBS for sources in VJ_TITLES_GROUP and map them to buttons in order."""
         try:
-            response = self.ws.call(requests.GetGroupSceneItemList(groupName=VJ_TITLES_GROUP))
-            try:
-                items = response.getSceneItems()
-            except AttributeError:
-                items = response.datain.get('sceneItems', [])
+            response = self.ws.call(requests.GetSceneItemList(sceneName=VJ_TITLES_GROUP))
+            raw = getattr(response, 'datain', {})
+            items = raw.get('sceneItems', [])
 
             self.front_room_sources = {}
             self.front_room_buttons = {}
@@ -302,11 +300,10 @@ class VJController:
     
     def hide_all_sources(self, room):
         """Hide all VJ sources in a room"""
+        scene = VJ_TITLES_GROUP
         if room == "front":
-            scene = FRONT_ROOM_SCENE
             sources = self.front_room_sources
         else:
-            scene = BACK_ROOM_SCENE
             sources = self.back_room_sources
 
         for vj_name, source_name in sources.items():
