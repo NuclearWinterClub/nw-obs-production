@@ -40,22 +40,27 @@ local function get_source(name)
     return obs.obs_get_source_by_name(name)
 end
 
-local VJ_TITLES_SCENE = "VJ Titles"
+local VJ_TITLES_FR = "VJ - Titles - Front"
+local VJ_TITLES_BR = "VJ - Titles - Back"
 
-local function set_visible(source_name, visible)
-    local vj_src = obs.obs_get_source_by_name(VJ_TITLES_SCENE)
+local function set_visible(scene_name, source_name, visible)
+    local vj_src = obs.obs_get_source_by_name(scene_name)
     if not vj_src then
-        log("Cannot find scene: " .. VJ_TITLES_SCENE)
+        log("ERROR: Cannot find scene: " .. scene_name)
         return
     end
     local scene = obs.obs_scene_from_source(vj_src)
-    if scene then
-        local item = obs.obs_scene_find_source(scene, source_name)
-        if item then
-            obs.obs_sceneitem_set_visible(item, visible)
-        else
-            log("Cannot find source in VJ Titles: " .. source_name)
-        end
+    if not scene then
+        log("ERROR: obs_scene_from_source returned nil for: " .. scene_name)
+        obs.obs_source_release(vj_src)
+        return
+    end
+    local item = obs.obs_scene_find_source(scene, source_name)
+    if item then
+        obs.obs_sceneitem_set_visible(item, visible)
+        log("set_visible OK: [" .. scene_name .. "] " .. source_name .. " → " .. tostring(visible))
+    else
+        log("ERROR: source not found in " .. scene_name .. ": " .. source_name)
     end
     obs.obs_source_release(vj_src)
 end
@@ -63,8 +68,11 @@ end
 local function restart_media(source_name)
     local src = get_source(source_name)
     if src then
+        log("restart_media: " .. source_name)
         obs.obs_source_media_restart(src)
         obs.obs_source_release(src)
+    else
+        log("ERROR: restart_media could not find source: " .. source_name)
     end
 end
 
@@ -86,10 +94,11 @@ end
 
 -- ── ROOM OPERATIONS ──────────────────────────────────────────
 local function hide_all(room)
-    local sources = (room == "FR") and front_sources or back_sources
+    local sources    = (room == "FR") and front_sources or back_sources
+    local scene_name = (room == "FR") and VJ_TITLES_FR  or VJ_TITLES_BR
     for _, name in ipairs(sources) do
         if name and name ~= "" then
-            set_visible(name, false)
+            set_visible(scene_name, name, false)
             stop_loop_timer(name)
         end
     end
@@ -132,7 +141,8 @@ local function activate_vj(room, slot)
 
     if room == "FR" then front_active = slot else back_active = slot end
 
-    set_visible(name, true)
+    local scene_name = (room == "FR") and VJ_TITLES_FR or VJ_TITLES_BR
+    set_visible(scene_name, name, true)
     restart_media(name)
     start_loop_timer(name)
     log(room .. " → slot " .. slot .. " (" .. name .. ")")
