@@ -137,6 +137,13 @@ local function activate_vj(room, slot)
         return
     end
 
+    -- Toggle off if already active
+    local current = (room == "FR") and front_active or back_active
+    if current == slot then
+        clear_room(room)
+        return
+    end
+
     hide_all(room)
 
     if room == "FR" then front_active = slot else back_active = slot end
