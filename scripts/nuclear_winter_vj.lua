@@ -40,8 +40,8 @@ local function get_source(name)
     return obs.obs_get_source_by_name(name)
 end
 
-local VJ_TITLES_FR = "VJ - Titles - Front"
-local VJ_TITLES_BR = "VJ - Titles - Back"
+local VJ_TITLES_FR = "VJ Titles - Front"
+local VJ_TITLES_BR = "VJ Titles - Back"
 
 local function set_visible(scene_name, source_name, visible)
     local vj_src = obs.obs_get_source_by_name(scene_name)
