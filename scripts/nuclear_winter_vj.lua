@@ -40,13 +40,24 @@ local function get_source(name)
     return obs.obs_get_source_by_name(name)
 end
 
+local VJ_TITLES_SCENE = "VJ Titles"
+
 local function set_visible(source_name, visible)
-    local scene_src = obs.obs_frontend_get_current_scene()
-    if not scene_src then return end
-    local scene = obs.obs_scene_from_source(scene_src)
-    local item  = obs.obs_scene_find_source(scene, source_name)
-    if item then obs.obs_sceneitem_set_visible(item, visible) end
-    obs.obs_source_release(scene_src)
+    local vj_src = obs.obs_get_source_by_name(VJ_TITLES_SCENE)
+    if not vj_src then
+        log("Cannot find scene: " .. VJ_TITLES_SCENE)
+        return
+    end
+    local scene = obs.obs_scene_from_source(vj_src)
+    if scene then
+        local item = obs.obs_scene_find_source(scene, source_name)
+        if item then
+            obs.obs_sceneitem_set_visible(item, visible)
+        else
+            log("Cannot find source in VJ Titles: " .. source_name)
+        end
+    end
+    obs.obs_source_release(vj_src)
 end
 
 local function restart_media(source_name)
