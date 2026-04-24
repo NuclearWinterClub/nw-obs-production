@@ -312,11 +312,10 @@ class VJController:
     
     def loop_vj(self, room, vj_name):
         """Loop a VJ video every 2 minutes"""
+        scene = VJ_TITLES_GROUP
         if room == "front":
-            scene = FRONT_ROOM_SCENE
             source_name = self.front_room_sources[vj_name]
         else:
-            scene = BACK_ROOM_SCENE
             source_name = self.back_room_sources[vj_name]
         
         print(f"  ⟳ Starting loop for {vj_name} in {room} room")
@@ -340,12 +339,11 @@ class VJController:
         """Toggle a VJ on/off with mutual exclusivity"""
         if room == "front":
             current = self.front_active
-            scene = FRONT_ROOM_SCENE
             source_name = self.front_room_sources[vj_name]
         else:
             current = self.back_active
-            scene = BACK_ROOM_SCENE
             source_name = self.back_room_sources[vj_name]
+        scene = VJ_TITLES_GROUP
         
         print(f"\n[{room.upper()} ROOM] Button pressed: {vj_name}")
         
